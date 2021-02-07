@@ -8,76 +8,21 @@
   TODO: params parsing and so on
 #*/
 'use strict';
+import "regenerator-runtime/runtime";
+const { Terminal } = require('xterm');
 const config = require('./src/config');
 const Mapscii = require('./src/Mapscii');
-const argv = require('yargs')
-  .option('latitude', {
-    alias: 'lat',
-    description: 'Latitude of initial centre',
-    default: config.initialLat,
-    type: 'number',
-  })
-  .option('longitude', {
-    alias: 'lon',
-    description: 'Longitude of initial centre',
-    default: config.initialLon,
-    type: 'number',
-  })
-  .option('zoom', {
-    alias: 'z',
-    description: 'Initial zoom',
-    default: config.initialZoom,
-    type: 'number',
-  })
-  .option('width', {
-    alias: 'w',
-    description: 'Fixed width of rendering',
-    type: 'number',
-  })
-  .option('height', {
-    alias: 'h',
-    description: 'Fixed height of rendering',
-    type: 'number',
-  })
-  .option('braille', {
-    alias: 'b',
-    description: 'Activate braille rendering',
-    default: config.useBraille,
-    type: 'boolean',
-  })
-  .option('headless', {
-    alias: 'H',
-    description: 'Activate headless mode',
-    default: config.headless,
-    type: 'boolean',
-  })
-  .option('tile_source', {
-    alias: 'tileSource',
-    description: 'URL or path to osm2vectortiles source',
-    default: config.source,
-    type: 'string',
-  })
-  .option('style_file', {
-    alias: 'style',
-    description: 'path to json style file',
-    default: config.styleFile,
-    type: 'string',
-  })
-  .strict()
-  .argv;
+var term = new Terminal();
+term.open(document.getElementById('terminal'));
 
 const options = {
-  initialLat: argv.latitude,
-  initialLon: argv.longitude,
-  initialZoom: argv.zoom,
+  initialZoom: 0,
   size: {
-    width: argv.width,
-    height: argv.height
+    width: 75,
+    height: 46
   },
-  useBraille: argv.braille,
-  headless: argv.headless,
-  source: argv.tile_source,
-  styleFile: argv.style_file,
+  output : term,
+  persistDownloadedTiles : false
 };
 
 const mapscii = new Mapscii(options);

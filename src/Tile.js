@@ -10,6 +10,7 @@ const Protobuf = require('pbf');
 const zlib = require('zlib');
 const RBush = require('rbush');
 const x256 = require('x256');
+var Buffer = require('buffer/').Buffer
 
 const config = require('./config');
 const utils = require('./utils');

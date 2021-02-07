@@ -7,7 +7,7 @@ module.exports = {
 
   //source: __dirname+"/../mbtiles/regensburg.mbtiles",
 
-  styleFile: __dirname+'/../styles/dark.json',
+  styleFile: dark_json,
 
   initialZoom: null,
   maxZoom: 18,

@@ -7,12 +7,8 @@
   * local MBTiles and VectorTiles
 */
 'use strict';
-const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch');
-const envPaths = require('env-paths');
-const paths = envPaths('mapscii');
-
+const fetch = require('isomorphic-fetch');
+var Buffer = require('buffer/').Buffer
 const Tile = require('./Tile');
 const config = require('./config');
 
@@ -43,9 +39,6 @@ class TileSource {
     this.styler = null;
     
     if (this.source.startsWith('http')) {
-      if (config.persistDownloadedTiles) {
-        this._initPersistence();
-      }
 
       this.mode = modes.HTTP;
 
@@ -102,24 +95,10 @@ class TileSource {
     }
   }
 
-  _getHTTP(z, x, y) {
-    let promise;
-    const persistedTile = this._getPersited(z, x, y);
-    if (config.persistDownloadedTiles && persistedTile) {
-      promise = Promise.resolve(persistedTile);
-    } else {
-      promise = fetch(this.source + [z,x,y].join('/') + '.pbf')
-        .then((res) => res.buffer())
-        .then((buffer) => {
-          if (config.persistDownloadedTiles) {
-            this._persistTile(z, x, y, buffer);
-            return buffer;
-          }
-        });
-    }
-    return promise.then((buffer) => {
-      return this._createTile(z, x, y, buffer);
-    });
+  async _getHTTP(z, x, y) {
+    let promise = await fetch("http://cors-anywhere.herokuapp.com/"+this.source + [z,x,y].join('/') + '.pbf')
+    let buffer = await promise.arrayBuffer()
+    return this._createTile(z, x, y, Buffer.from(buffer));
   }
 
   _getMBTile(z, x, y) {
@@ -141,38 +120,6 @@ class TileSource {
     return tile.load(buffer);
   }
 
-  _initPersistence() {
-    try {
-      this._createFolder(paths.cache);
-    } catch (error) {
-      config.persistDownloadedTiles = false;
-    }
-  }
-
-  _persistTile(z, x, y, buffer) {
-    const zoom = z.toString();
-    this._createFolder(path.join(paths.cache, zoom));
-    const filePath = path.join(paths.cache, zoom, `${x}-${y}.pbf`);
-    return fs.writeFile(filePath, buffer, () => null);
-  }
-
-  _getPersited(z, x, y) {
-    try {
-      return fs.readFileSync(path.join(paths.cache, z.toString(), `${x}-${y}.pbf`));
-    } catch (error) {
-      return false;
-    }
-  }
-
-  _createFolder(path) {
-    try {
-      fs.mkdirSync(path);
-      return true;
-    } catch (error) {
-      if (error.code === 'EEXIST') return true;
-      throw error;
-    }
-  }
 }
 
 module.exports = TileSource;

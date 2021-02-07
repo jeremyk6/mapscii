@@ -5,7 +5,6 @@
   UI and central command center
 */
 'use strict';
-const fs = require('fs');
 const keypress = require('keypress');
 const TermMouse = require('term-mouse');
 
@@ -57,17 +56,17 @@ class Mapscii {
     this.tileSource.init(config.source);
   }
 
-  _initKeyboard() {
+  _initKeyboard() {/*
     keypress(config.input);
     if (config.input.setRawMode) {
       config.input.setRawMode(true);
     }
     config.input.resume();
 
-    config.input.on('keypress', (ch, key) => this._onKey(key));
+    config.input.on('keypress', (ch, key) => this._onKey(key));*/
   }
 
-  _initMouse() {
+  _initMouse() {/*
     this.mouse = TermMouse({
       input: config.input,
       output: config.output,
@@ -76,17 +75,17 @@ class Mapscii {
 
     this.mouse.on('click', (event) => this._onClick(event));
     this.mouse.on('scroll', (event) => this._onMouseScroll(event));
-    this.mouse.on('move', (event) => this._onMouseMove(event));
+    this.mouse.on('move', (event) => this._onMouseMove(event));*/
   }
 
   _initRenderer() {
-    const style = JSON.parse(fs.readFileSync(config.styleFile, 'utf8'));
+    const style = config.styleFile;
     this.renderer = new Renderer(config.output, this.tileSource, style);
 
-    config.output.on('resize', () => {
+    /*config.output.on('resize', () => {
       this._resizeRenderer();
       this._draw();
-    });
+    });*/
 
     this._resizeRenderer();
     this.zoom = (config.initialZoom !== null) ? config.initialZoom : this.minZoom;
